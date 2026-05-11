@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     naver_client_secret: str | None = Field(default=None, validation_alias="NAVER_CLIENT_SECRET")
     openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
     request_timeout_seconds: float = 10.0
+    seed_demo_data: bool = Field(default=False, validation_alias="SEED_DEMO_DATA")
 
 
 @lru_cache

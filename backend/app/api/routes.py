@@ -1,11 +1,13 @@
 from datetime import date
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.db.session import get_db
 from app.schemas.dashboard import DashboardSummary, NewsArticleOut, TransactionOut
+from app.services.demo_seed import seed_demo_data
 from app.services.reporting import build_kpis, generate_rule_based_report, now_utc
 from app.services.repositories import (
     get_daily_report,
@@ -51,6 +53,14 @@ def dashboard_summary(
         latest_news=news,
         daily_report=report,
     )
+
+
+@router.post("/dev/seed-demo")
+def seed_demo(db: DbSession) -> dict[str, int]:
+    settings = get_settings()
+    if settings.environment != "local":
+        raise HTTPException(status_code=403, detail="demo seed endpoint is only enabled locally")
+    return seed_demo_data(db)
 
 
 @router.get("/transactions", response_model=list[TransactionOut])
